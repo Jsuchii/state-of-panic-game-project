@@ -18,13 +18,21 @@ const demoSheet = getProject('US_States_Lore').sheet('MainScene')
 
 function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh', background: 'black', margin: 0, overflow: 'hidden' }}>
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        background: 'black',
+        margin: 0,
+        overflow: 'hidden',
+      }}
+    >
       {/* THE 3D WORLD */}
       <Canvas>
         <SheetProvider sheet={demoSheet}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} />
-          
+
           {/* Temporary Mesh to test Animation - We will replace this later */}
           <mesh>
             <boxGeometry />
@@ -36,17 +44,32 @@ function App() {
       </Canvas>
 
       {/* THE UI OVERLAY */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-        
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+        }}
+      >
         {/* Header */}
-        <div style={{ position: 'absolute', top: 20, left: 20, color: 'white', fontFamily: 'monospace' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: 20,
+            left: 20,
+            color: 'white',
+            fontFamily: 'monospace',
+          }}
+        >
           <h1>US STATES: RELOADED</h1>
           <p>System Status: Online</p>
         </div>
 
         {/* NEW: The Typing Game */}
         <TypingOverlay />
-        
       </div>
     </div>
   )

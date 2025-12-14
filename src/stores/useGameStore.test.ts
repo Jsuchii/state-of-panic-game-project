@@ -6,12 +6,11 @@ beforeEach(() => {
   useGameStore.setState({
     score: 0,
     targetState: 'Texas', // Force a specific state for testing
-    userInput: ''
+    userInput: '',
   })
 })
 
 describe('Game Logic (Store)', () => {
-  
   it('initializes with zero score', () => {
     const { score } = useGameStore.getState()
     expect(score).toBe(0)
@@ -20,7 +19,7 @@ describe('Game Logic (Store)', () => {
   it('accepts correct keystrokes', () => {
     // Simulate typing "T" for "Texas"
     useGameStore.getState().handleKeyStroke('t')
-    
+
     const { userInput } = useGameStore.getState()
     expect(userInput).toBe('t')
   })
@@ -28,7 +27,7 @@ describe('Game Logic (Store)', () => {
   it('ignores wrong keystrokes', () => {
     // Simulate typing "X" for "Texas" (Wrong!)
     useGameStore.getState().handleKeyStroke('x')
-    
+
     const { userInput } = useGameStore.getState()
     expect(userInput).toBe('') // Should not have added the 'x'
   })
