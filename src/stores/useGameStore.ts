@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { getRandomStateName } from '../data/stateData'
 
 // 1. Define the Shape of the Store (The Interface)
 interface GameState {
@@ -16,13 +17,12 @@ interface GameState {
   restartGame: () => void
 }
 
-const STATES_POOL = ["California", "Texas", "Florida", "New York", "Ohio", "Washington", "Nevada"]
 const INITIAL_TIME = 30 
 
 export const useGameStore = create<GameState>((set, get) => ({
   // Initial Data
   score: 0,
-  targetState: "California", 
+  targetState: getRandomStateName(),
   userInput: "",
   gameStatus: 'ready', // Default state
   timeLeft: INITIAL_TIME,
@@ -43,7 +43,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       
       // Word Finished?
       if (newUserInput.toLowerCase() === targetState.toLowerCase()) {
-        const nextState = STATES_POOL[Math.floor(Math.random() * STATES_POOL.length)]
+        const nextState = getRandomStateName()
         set({ 
           score: score + 100, 
           userInput: "", 
