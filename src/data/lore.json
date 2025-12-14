@@ -1,0 +1,6 @@
+{
+  "intro": {
+    "text": "Welcome to the simulation.",
+    "camera_anim": "IntroPan"
+  }
+}

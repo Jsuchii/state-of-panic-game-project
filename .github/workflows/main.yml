@@ -1,0 +1,31 @@
+name: CI Pipeline
+
+# Trigger this workflow whenever code is pushed to the main branch
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Check out your code onto the server
+    - uses: actions/checkout@v3
+
+    # 2. Install Node.js
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: 'npm'
+
+    # 3. Install dependencies (using the fix we found earlier)
+    - name: Install Dependencies
+      run: npm install --legacy-peer-deps
+
+    # 4. Run the tests (Vitest)
+    - name: Run Tests
+      run: npx vitest run
