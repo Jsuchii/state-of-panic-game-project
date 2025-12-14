@@ -1,49 +1,84 @@
 import { create } from 'zustand'
 
+// 1. Define the Shape of the Store (The Interface)
 interface GameState {
+  // Data
   score: number
-  targetState: string // The state the player needs to type (e.g., "Texas")
-  userInput: string // What the player has typed so far (e.g., "Tex")
+  targetState: string
+  userInput: string
+  gameStatus: 'ready' | 'playing' | 'game-over' // <--- The errors are asking for this
+  timeLeft: number                              // <--- And this
 
-  // Actions
+  // Actions (Functions)
   handleKeyStroke: (key: string) => void
-  resetLevel: () => void
+  startGame: () => void                         // <--- And this
+  tickTimer: () => void
+  restartGame: () => void
 }
 
-const STATES_POOL = ['California', 'Texas', 'Florida', 'New York', 'Ohio']
+const STATES_POOL = ["California", "Texas", "Florida", "New York", "Ohio", "Washington", "Nevada"]
+const INITIAL_TIME = 30 
 
 export const useGameStore = create<GameState>((set, get) => ({
+  // Initial Data
   score: 0,
-  targetState: 'California', // Default start
-  userInput: '',
+  targetState: "California", 
+  userInput: "",
+  gameStatus: 'ready', // Default state
+  timeLeft: INITIAL_TIME,
+
+  // --- ACTIONS ---
 
   handleKeyStroke: (key) => {
-    const { targetState, userInput, score } = get()
+    const { targetState, userInput, score, gameStatus, timeLeft } = get()
+    
+    // Stop if game is not active
+    if (gameStatus !== 'playing') return
 
-    // 1. Calculate the new string if they typed the next correct letter
     const expectedChar = targetState[userInput.length].toLowerCase()
-
+    
+    // Check key match
     if (key.toLowerCase() === expectedChar) {
       const newUserInput = userInput + key
-
-      // 2. Check if they finished the word
+      
+      // Word Finished?
       if (newUserInput.toLowerCase() === targetState.toLowerCase()) {
-        // SUCCESS!
         const nextState = STATES_POOL[Math.floor(Math.random() * STATES_POOL.length)]
-        set({
-          score: score + 100,
-          userInput: '',
+        set({ 
+          score: score + 100, 
+          userInput: "", 
           targetState: nextState,
+          timeLeft: timeLeft + 2 // Bonus time
         })
       } else {
-        // Just add the letter
+        // Continue typing
         set({ userInput: newUserInput })
       }
-    } else {
-      // WRONG KEY! (Optional: You could add a 'lives' penalty here later)
-      console.log('Wrong key!')
     }
   },
 
-  resetLevel: () => set({ score: 0, userInput: '' }),
+  startGame: () => set({ 
+    gameStatus: 'playing', 
+    timeLeft: INITIAL_TIME, 
+    score: 0, 
+    userInput: '' 
+  }),
+
+  tickTimer: () => {
+    const { timeLeft, gameStatus } = get()
+    if (gameStatus !== 'playing') return
+
+    if (timeLeft > 0) {
+      set({ timeLeft: timeLeft - 1 })
+    } else {
+      set({ gameStatus: 'game-over' })
+    }
+  },
+
+  restartGame: () => set({ 
+    gameStatus: 'ready', 
+    userInput: '', 
+    score: 0,
+    timeLeft: INITIAL_TIME
+  })
 }))

@@ -1,78 +1,64 @@
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import { SheetProvider } from '@theatre/r3f'
+import { getProject } from '@theatre/core'
+import { SheetProvider, PerspectiveCamera } from '@theatre/r3f'
 import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
-import { getProject } from '@theatre/core'
+
+// Imports for your UI architecture
+import { MainMenu } from './components/Menus/MainMenu'
 import { TypingOverlay } from './components/UI/TypingOverlay'
+import { useGameStore } from './stores/useGameStore'
 
-// Initialize Theatre.js Studio (The Animation UI)
-// This only runs in development mode
-if (import.meta.env.DEV) {
-  studio.initialize()
-  studio.extend(extension)
-}
+// Initialize Theatre.js studio
+studio.initialize()
+studio.extend(extension)
 
-// Our Animation Project File
-const demoSheet = getProject('US_States_Lore').sheet('MainScene')
+// The animation sheet
+const demoSheet = getProject('State of Panic').sheet('Level 1')
 
-function App() {
+export default function App() {
+  // 1. Subscribe to the game status ("ready", "playing", or "game-over")
+  const gameStatus = useGameStore((state) => state.gameStatus)
+
   return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        background: 'black',
-        margin: 0,
-        overflow: 'hidden',
-      }}
-    >
-      {/* THE 3D WORLD */}
+    // The Main Container (Full Screen)
+    <div style={{ width: '100vw', height: '100vh', background: '#111' }}>
+      
+      {/* LAYER 1: 3D Scene (Background) */}
       <Canvas>
         <SheetProvider sheet={demoSheet}>
+          <PerspectiveCamera theatreKey="Camera" makeDefault position={[0, 0, 10]} />
+          
           <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 5]} />
-
-          {/* Temporary Mesh to test Animation - We will replace this later */}
-          <mesh>
-            <boxGeometry />
+          <pointLight position={[10, 10, 10]} />
+          
+          {/* Your Spinning Cube (Placeholder for future city) */}
+          <mesh rotation={[0.5, 0.5, 0]}>
+            <boxGeometry args={[2, 2, 2]} />
             <meshStandardMaterial color="orange" />
           </mesh>
-
-          <OrbitControls />
         </SheetProvider>
       </Canvas>
 
-      {/* THE UI OVERLAY */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-        }}
-      >
-        {/* Header */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 20,
-            left: 20,
-            color: 'white',
-            fontFamily: 'monospace',
-          }}
-        >
-          <h1>US STATES: RELOADED</h1>
-          <p>System Status: Online</p>
-        </div>
+      {/* LAYER 2: UI Overlay (Foreground) */}
+      <div style={{ 
+        position: 'absolute', 
+        top: 0, 
+        left: 0, 
+        width: '100%', 
+        height: '100%', 
+        pointerEvents: 'none' // Allows clicks to pass through empty areas
+      }}>
+        
+        {/* THE ROUTER: Decides which screen to show */}
+        {gameStatus === 'ready' ? (
+           <MainMenu /> 
+        ) : (
+           <TypingOverlay />
+        )}
 
-        {/* NEW: The Typing Game */}
-        <TypingOverlay />
       </div>
+
     </div>
   )
 }
-
-export default App
